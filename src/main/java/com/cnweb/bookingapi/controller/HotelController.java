@@ -2,22 +2,23 @@ package com.cnweb.bookingapi.controller;
 
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.service.HotelService;
+import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/hotels")
+@RequiredArgsConstructor
 public class HotelController {
-    private HotelService hotelService;
-    public HotelController(HotelService hotelService) {
-        this.hotelService = hotelService;
-    }
+    private final HotelService hotelService;
     @GetMapping()
     public ResponseEntity<List<Hotel>> getAllHotels() {
         return new ResponseEntity<>(hotelService.allHotels(), HttpStatus.OK);
@@ -26,6 +27,16 @@ public class HotelController {
     public ResponseEntity<Hotel> getSingleHotel(@PathVariable ObjectId id) {
         return new ResponseEntity<>(hotelService.singleHotel(id), HttpStatus.OK);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Hotel>> getAvailableHotels(
+            @RequestParam String dest,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout,
+            @RequestParam Integer adults, @RequestParam Integer children, @RequestParam Integer roomQuantity) {
+        return ResponseEntity.ok(hotelService.availableHotels(dest, checkin, checkout, adults, children, roomQuantity));
+    }
+
     @PostMapping()
     public ResponseEntity<Hotel> createHotel(@RequestBody Hotel hotel) {
         hotelService.newHotel(hotel);
