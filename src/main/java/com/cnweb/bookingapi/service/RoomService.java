@@ -4,7 +4,6 @@ import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.model.Room;
 import com.cnweb.bookingapi.repository.HotelRepository;
 import com.cnweb.bookingapi.repository.RoomRepository;
-import com.cnweb.bookingapi.utils.validate.CheckAvailableRoom;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +32,7 @@ public class RoomService {
 
     public List<Room> availableRooms(ObjectId hotelId, LocalDate checkIn, LocalDate checkOut) {
         return allRooms(hotelId).stream()
-                .filter(room -> CheckAvailableRoom.checkAvailable(room, checkIn, checkOut)).toList();
+                .filter(room -> room.isAvailableBetween(checkIn, checkOut)).toList();
     }
 
     public Room newRoom(ObjectId hotelId, Room room) {

@@ -26,7 +26,7 @@ public class UserService {
         return userRepository.findAll();
     }
     public User createClient(RegisterUserDto input) {
-        Optional<Role> optionalRole = roleRepository.findByName(ERole.CLIENT);
+        Optional<Role> optionalRole = roleRepository.findByName(ERole.HOTEL);
         if (optionalRole.isEmpty()) return null;
         User client = new User(input.getFullName(), input.getEmail().toLowerCase(),
                 passwordEncoder.encode(input.getPassword()));

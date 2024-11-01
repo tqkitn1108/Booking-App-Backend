@@ -2,6 +2,6 @@ package com.cnweb.bookingapi.model;
 
 public enum ERole {
     USER,
-    CLIENT,
+    HOTEL,
     ADMIN
 }

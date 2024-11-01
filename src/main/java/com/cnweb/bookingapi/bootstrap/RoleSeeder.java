@@ -23,10 +23,10 @@ public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
         this.loadRoles();
     }
     private void loadRoles() {
-        ERole[] roleNames = new ERole[]{ERole.USER, ERole.CLIENT, ERole.ADMIN};
+        ERole[] roleNames = new ERole[]{ERole.USER, ERole.HOTEL, ERole.ADMIN};
         Map<ERole, String> roleDescriptionMap = Map.of(
                 ERole.USER, "Default user role",
-                ERole.CLIENT, "Client role",
+                ERole.HOTEL, "Client role",
                 ERole.ADMIN, "Administrator role"
         );
         Arrays.stream(roleNames).forEach((roleName) -> {

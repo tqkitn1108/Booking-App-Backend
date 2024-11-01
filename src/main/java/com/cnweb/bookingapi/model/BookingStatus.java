@@ -1,5 +1,5 @@
 package com.cnweb.bookingapi.model;
 
-public enum EBookingStatus {
+public enum BookingStatus {
     PENDING, CANCELLED, BOOKED, RESERVED
 }

@@ -3,7 +3,6 @@ package com.cnweb.bookingapi.service;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.model.Room;
 import com.cnweb.bookingapi.repository.HotelRepository;
-import com.cnweb.bookingapi.utils.validate.CheckAvailableRoom;
 import lombok.RequiredArgsConstructor;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -31,7 +30,7 @@ public class HotelService {
         return hotelList.stream().filter(hotel -> {
             int maxPeople = 0, numOfRooms = 0;
             for (Room room : hotel.getRooms()) {
-                if (CheckAvailableRoom.checkAvailable(room, checkIn, checkOut)) {
+                if (room.isAvailableBetween(checkIn, checkOut)) {
                     maxPeople += room.getCapacity();
                     numOfRooms++;
                 }
