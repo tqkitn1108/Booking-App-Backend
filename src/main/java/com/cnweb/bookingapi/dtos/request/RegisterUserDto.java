@@ -5,8 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Set;
-
 @Data
 public class RegisterUserDto {
     @NotBlank
@@ -16,7 +14,7 @@ public class RegisterUserDto {
     @Size(max = 50)
     @Email
     private String email;
-    private Set<String> roles;
+    private String role;
     @NotBlank
     @Size(min = 8, max = 40)
     private String password;

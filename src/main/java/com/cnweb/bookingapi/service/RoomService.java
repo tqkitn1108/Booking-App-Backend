@@ -5,7 +5,6 @@ import com.cnweb.bookingapi.model.Room;
 import com.cnweb.bookingapi.repository.HotelRepository;
 import com.cnweb.bookingapi.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Update;
@@ -22,27 +21,27 @@ public class RoomService {
     private final HotelRepository hotelRepository;
     private final MongoTemplate mongoTemplate;
 
-    public List<Room> allRooms(ObjectId hotelId) {
+    public List<Room> allRooms(String hotelId) {
         return hotelRepository.findById(hotelId).orElseThrow().getRooms();
     }
 
-    public Room singleRoom(ObjectId id) {
+    public Room singleRoom(String id) {
         return roomRepository.findById(id).orElse(null);
     }
 
-    public List<Room> availableRooms(ObjectId hotelId, LocalDate checkIn, LocalDate checkOut) {
+    public List<Room> availableRooms(String hotelId, LocalDate checkIn, LocalDate checkOut) {
         return allRooms(hotelId).stream()
                 .filter(room -> room.isAvailableBetween(checkIn, checkOut)).toList();
     }
 
-    public Room newRoom(ObjectId hotelId, Room room) {
+    public Room newRoom(String hotelId, Room room) {
         mongoTemplate.update(Hotel.class)
                 .matching(Criteria.where("id").is(hotelId))
                 .apply(new Update().push("rooms", room))
                 .first();
         return roomRepository.save(room);
     }
-    public Room updateRoom(ObjectId roomId, Room room) {
+    public Room updateRoom(String roomId, Room room) {
         Room currentRoom = roomRepository.findById(roomId).orElseThrow();
         Class<? extends Room> roomClass = room.getClass();
         for (Field field : roomClass.getDeclaredFields()) {
@@ -59,7 +58,7 @@ public class RoomService {
         return roomRepository.save(currentRoom);
     }
 
-    public void deleteRoom(ObjectId hotelId, ObjectId roomId) {
+    public void deleteRoom(String hotelId, String roomId) {
         mongoTemplate.update(Hotel.class)
                 .matching(Criteria.where("id").is(hotelId))
                 .apply(new Update().pull("rooms", roomRepository.findById(roomId).orElseThrow()))

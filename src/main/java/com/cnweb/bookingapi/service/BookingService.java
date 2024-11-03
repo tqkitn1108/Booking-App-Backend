@@ -9,7 +9,6 @@ import com.cnweb.bookingapi.repository.BookingRepository;
 import com.cnweb.bookingapi.repository.HotelRepository;
 import com.cnweb.bookingapi.repository.RoomRepository;
 import com.cnweb.bookingapi.repository.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,10 +31,10 @@ public class BookingService {
     public List<Booking> allBookings() {
         return bookingRepository.findAll();
     }
-    public List<Booking> allUserBookings(ObjectId userId) {
+    public List<Booking> allUserBookings(String userId) {
         return userRepository.findById(userId).orElseThrow().getBookings();
     }
-    public List<Booking> allHotelBookings(ObjectId hotelId) {
+    public List<Booking> allHotelBookings(String hotelId) {
         List<Room> roomsInHotel = hotelRepository.findById(hotelId).orElseThrow().getRooms();
         List<Booking> bookingList = new ArrayList<>();
         for (Room room : roomsInHotel) {
@@ -43,7 +42,7 @@ public class BookingService {
         }
         return bookingList;
     }
-    public Booking reservation(ObjectId hotelId, BookingDto bookingDto) {
+    public Booking reservation(String hotelId, BookingDto bookingDto) {
         Hotel hotel = hotelRepository.findById(hotelId).orElse(null);
         List<Room> roomList = bookingDto.getRoomIds().stream().map(roomId ->
                 roomRepository.findById(roomId).orElseThrow()).toList();
@@ -63,7 +62,14 @@ public class BookingService {
         });
         return bookingRepository.save(booking);
     }
-    public void deleteBooking(ObjectId bookingId) {
+
+    public Booking confirmBooking(String bookingId, BookingStatus status) {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        booking.setBookingStatus(status);
+        return bookingRepository.save(booking);
+    }
+
+    public void deleteBooking(String bookingId) {
         bookingRepository.deleteById(bookingId);
     }
 }
