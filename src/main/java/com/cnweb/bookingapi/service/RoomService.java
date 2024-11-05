@@ -2,7 +2,7 @@ package com.cnweb.bookingapi.service;
 
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.model.Room;
-import com.cnweb.bookingapi.repository.HotelRepository;
+import com.cnweb.bookingapi.model.RoomType;
 import com.cnweb.bookingapi.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -12,17 +12,23 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class RoomService {
     private final RoomRepository roomRepository;
-    private final HotelRepository hotelRepository;
     private final MongoTemplate mongoTemplate;
 
     public List<Room> allRooms(String hotelId) {
-        return hotelRepository.findById(hotelId).orElseThrow().getRooms();
+        List<Room> rooms = new ArrayList<>();
+        Objects.requireNonNull(mongoTemplate.findById(hotelId, Hotel.class)).getRoomTypes()
+                .forEach(roomType -> {
+                    rooms.addAll(roomType.getRooms());
+                });
+        return rooms;
     }
 
     public Room singleRoom(String id) {
@@ -34,35 +40,22 @@ public class RoomService {
                 .filter(room -> room.isAvailableBetween(checkIn, checkOut)).toList();
     }
 
-    public Room newRoom(String hotelId, Room room) {
-        mongoTemplate.update(Hotel.class)
-                .matching(Criteria.where("id").is(hotelId))
-                .apply(new Update().push("rooms", room))
+    public Room newRoom(Room room) {
+        roomRepository.save(room);
+        mongoTemplate.update(RoomType.class)
+                .matching(Criteria.where("id").is(room.getRoomType().getId()))
+                .apply(new Update().push("rooms").value(room))
                 .first();
-        return roomRepository.save(room);
-    }
-    public Room updateRoom(String roomId, Room room) {
-        Room currentRoom = roomRepository.findById(roomId).orElseThrow();
-        Class<? extends Room> roomClass = room.getClass();
-        for (Field field : roomClass.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(room);
-                if (value != null) {
-                    field.set(currentRoom, value);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return roomRepository.save(currentRoom);
+        return room;
     }
 
-    public void deleteRoom(String hotelId, String roomId) {
-        mongoTemplate.update(Hotel.class)
-                .matching(Criteria.where("id").is(hotelId))
-                .apply(new Update().pull("rooms", roomRepository.findById(roomId).orElseThrow()))
+    public String deleteRoom(String roomId) {
+        Room deletedRoom = roomRepository.findById(roomId).orElseThrow();
+        mongoTemplate.update(RoomType.class)
+                .matching(Criteria.where("id").is(deletedRoom.getRoomType().getId()))
+                .apply(new Update().pull("rooms", deletedRoom))
                 .first();
         roomRepository.deleteById(roomId);
+        return "Room has been deleted";
     }
 }

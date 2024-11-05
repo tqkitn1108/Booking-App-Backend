@@ -10,8 +10,12 @@ import java.util.Optional;
 
 public interface HotelRepository extends MongoRepository<Hotel, String> {
     Optional<Hotel> findByName(String name);
-    Page<Hotel> findByLocation(String location, Pageable pageable);
+
+    List<Hotel> findByDest(String dest);
+
+    Page<Hotel> findByDest(String dest, Pageable pageable);
+
     Page<Hotel> findByStar(Integer star, Pageable pageable);
-    Page<Hotel> findByCheapestPriceBetween(int from, int to, Pageable pageable);
+
     Page<Hotel> findByNameContaining(String name, Pageable pageable);
 }

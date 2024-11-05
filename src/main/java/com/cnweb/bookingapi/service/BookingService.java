@@ -28,27 +28,19 @@ public class BookingService {
         this.hotelRepository = hotelRepository;
         this.roomRepository = roomRepository;
     }
-    public List<Booking> allBookings() {
-        return bookingRepository.findAll();
-    }
     public List<Booking> allUserBookings(String userId) {
         return userRepository.findById(userId).orElseThrow().getBookings();
     }
     public List<Booking> allHotelBookings(String hotelId) {
-        List<Room> roomsInHotel = hotelRepository.findById(hotelId).orElseThrow().getRooms();
-        List<Booking> bookingList = new ArrayList<>();
-        for (Room room : roomsInHotel) {
-            bookingList.addAll(room.getBookings());
-        }
-        return bookingList;
+        return hotelRepository.findById(hotelId).orElseThrow().getBookings();
     }
     public Booking reservation(String hotelId, BookingDto bookingDto) {
-        Hotel hotel = hotelRepository.findById(hotelId).orElse(null);
+        Booking booking = bookingDto.toBooking();
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
         List<Room> roomList = bookingDto.getRoomIds().stream().map(roomId ->
                 roomRepository.findById(roomId).orElseThrow()).toList();
-        Booking booking = new Booking(bookingDto.getFullName(), bookingDto.getEmail(), bookingDto.getPhoneNumber(),
-                hotel, roomList, bookingDto.getTotalPrice(), bookingDto.getAdults(), bookingDto.getChildren(),
-                bookingDto.getCheckInDate(), bookingDto.getCheckOutDate());
+        booking.setHotel(hotel);
+        booking.setRooms(roomList);
         booking.setBookingStatus(BookingStatus.PENDING);
         List<LocalDate> stayDateList = new ArrayList<>();
         LocalDate date = bookingDto.getCheckInDate();

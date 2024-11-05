@@ -1,5 +1,6 @@
 package com.cnweb.bookingapi.service;
 
+import com.cnweb.bookingapi.dtos.request.ReviewDto;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.model.Review;
 import com.cnweb.bookingapi.repository.HotelRepository;
@@ -31,11 +32,10 @@ public class ReviewService {
         return reviewList.subList(0, 5);
     }
 
-    public Review newReview(String content, int rating, String hotelId) {
+    public Review newReview(ReviewDto input, String hotelId) {
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
-        int numberOfReviews = hotel.getReviews().size();
-        hotel.setRating((hotel.getRating() * numberOfReviews + rating) / (numberOfReviews + 1));
-        Review review = new Review(content, rating);
+        hotel.updateRating(input.getRating());
+        Review review = new Review(input.getBookingId(), input.getFullName(), input.getRating(), input.getContent());
         review.setReviewDate(LocalDate.now());
         reviewRepository.insert(review);
         mongoTemplate.update(Hotel.class)

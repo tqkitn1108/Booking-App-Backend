@@ -3,15 +3,16 @@ package com.cnweb.bookingapi.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.*;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Document(collection = "bookings")
 @Data
+@Accessors(chain = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class Booking {
@@ -20,15 +21,16 @@ public class Booking {
     private String fullName;
     private String email;
     private String phoneNumber;
-    @DBRef
+    @DocumentReference(lazy = true)
     private Hotel hotel;
-    @DBRef
+    @DocumentReference(lazy = true)
     private List<Room> rooms;
     private Double totalPrice;
     private Integer adults;
     private Integer children;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
+    @Field(targetType = FieldType.STRING)
     private BookingStatus bookingStatus;
 
     public Booking(String fullName, String email, String phoneNumber, Hotel hotel,

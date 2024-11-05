@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,7 +33,7 @@ public class User implements UserDetails {
     private String password;
     @DBRef
     private Role role;
-    @DBRef
+    @DocumentReference(lazy = true)
     private List<Booking> bookings;
 
     public User(String fullName, String email, String password) {
