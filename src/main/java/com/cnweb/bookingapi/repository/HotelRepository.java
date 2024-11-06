@@ -15,6 +15,8 @@ public interface HotelRepository extends MongoRepository<Hotel, String> {
 
     Page<Hotel> findByDest(String dest, Pageable pageable);
 
+    List<Hotel> findByType(String type);
+
     Page<Hotel> findByStar(Integer star, Pageable pageable);
 
     Page<Hotel> findByNameContaining(String name, Pageable pageable);

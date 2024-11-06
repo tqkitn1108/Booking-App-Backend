@@ -2,6 +2,7 @@ package com.cnweb.bookingapi.controller;
 
 import com.cnweb.bookingapi.dtos.request.BookingDto;
 import com.cnweb.bookingapi.model.Booking;
+import com.cnweb.bookingapi.model.BookingStatus;
 import com.cnweb.bookingapi.service.BookingService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,12 @@ public class BookingController {
     @PostMapping("/{hotelId}")
     public ResponseEntity<Booking> createBooking(@PathVariable String hotelId,
                                                  @Valid @RequestBody BookingDto bookingDto) {
-        return ResponseEntity.ok(bookingService.reservation(hotelId, bookingDto));
+        return ResponseEntity.ok(bookingService.createReservation(hotelId, bookingDto));
+    }
+
+    @PostMapping("/{bookingId}")
+    public void confirmBooking(@PathVariable String bookingId, @RequestParam BookingStatus status) {
+        bookingService.confirmBooking(bookingId, status);
     }
 
     @DeleteMapping("/{bookingId}")

@@ -5,8 +5,11 @@ import com.cnweb.bookingapi.dtos.request.RegisterUserDto;
 import com.cnweb.bookingapi.model.ERole;
 import com.cnweb.bookingapi.model.Role;
 import com.cnweb.bookingapi.model.User;
+import com.cnweb.bookingapi.model.token.VerificationToken;
 import com.cnweb.bookingapi.repository.RoleRepository;
 import com.cnweb.bookingapi.repository.UserRepository;
+import com.cnweb.bookingapi.repository.VerificationTokenRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,22 +18,18 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final VerificationTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    public AuthenticationService(UserRepository userRepository, RoleRepository roleRepository,
-                                 PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-    }
+
     public User signup(RegisterUserDto input) throws Exception {
         String email = input.getEmail().toLowerCase();
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new Exception("Email has been used!");
+            throw new Exception("User with email " + input.getEmail() + " already exists");
         }
         Optional<Role> optionalRole = roleRepository.findByName(ERole.USER);
         if (optionalRole.isEmpty()) return null;
@@ -38,10 +37,25 @@ public class AuthenticationService {
         user.setRole(optionalRole.get());
         return userRepository.save(user);
     }
+
     public User authenticate(LoginUserDto input) {
         String email = input.getEmail().toLowerCase();
         String password = input.getPassword();
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         return userRepository.findByEmail(email).orElseThrow();
+    }
+
+    public String verifyEmail(String token) {
+        Optional<VerificationToken> theToken = tokenRepository.findByToken(token);
+        if (theToken.isEmpty()) return "Invalid verification token";
+        User user = theToken.get().getUser();
+        if (user.isVerified()) return "This account has been verified, please login.";
+        if (theToken.get().getExpirationTime().getTime() < System.currentTimeMillis()) {
+            tokenRepository.delete(theToken.get());
+            return "Token already expired";
+        }
+        user.setVerified(true);
+        userRepository.save(user);
+        return "Email verified successfully. Now you can login to your account.";
     }
 }
