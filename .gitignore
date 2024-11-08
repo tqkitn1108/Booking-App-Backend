@@ -33,3 +33,6 @@ build/
 .vscode/
 
 .env
+
+### firebase JSON file
+src/main/resources/booking-project-eea45-firebase-adminsdk-9lvr1-3f91af4204.json
