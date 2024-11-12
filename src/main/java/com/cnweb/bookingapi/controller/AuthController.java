@@ -3,6 +3,7 @@ package com.cnweb.bookingapi.controller;
 import com.cnweb.bookingapi.dtos.request.LoginUserDto;
 import com.cnweb.bookingapi.dtos.request.RegisterUserDto;
 import com.cnweb.bookingapi.dtos.response.LoginResponse;
+import com.cnweb.bookingapi.dtos.response.UserInfoResponse;
 import com.cnweb.bookingapi.event.RegistrationCompleteEvent;
 import com.cnweb.bookingapi.model.User;
 import com.cnweb.bookingapi.security.jwt.JwtService;
@@ -22,15 +23,6 @@ public class AuthController {
     private final JwtService jwtService;
     private final ApplicationEventPublisher publisher;
 
-//    @PostMapping("/signup")
-//    public ResponseEntity<User> register(@RequestBody @Valid RegisterUserDto registerUserDto) throws Exception {
-//        User registeredUser = authenticationService.signup(registerUserDto);
-//        String subject = "Confirm your account";
-//        String body = "Your account has been created on our platform";
-//        emailService.sendEmail(registerUserDto.getEmail(), subject, body);
-//        return ResponseEntity.ok(registeredUser);
-//    }
-
     @PostMapping("/signup")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterUserDto registerUserDto,
                                            final HttpServletRequest request) throws Exception {
@@ -48,11 +40,13 @@ public class AuthController {
     public ResponseEntity<LoginResponse> authenticate(@RequestBody @Valid LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);
         String jwtToken = jwtService.generateToken(authenticatedUser);
-        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime());
+        UserInfoResponse userInfoResponse = new UserInfoResponse(authenticatedUser);
+        LoginResponse loginResponse = new LoginResponse(jwtToken, jwtService.getExpirationTime(), userInfoResponse);
         return ResponseEntity.ok(loginResponse);
     }
 
     private String applicationUrl(HttpServletRequest request) {
-        return "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+        String protocol = request.getServerName().equals("localhost") ? "http://" : "https://";
+        return protocol + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
     }
 }
