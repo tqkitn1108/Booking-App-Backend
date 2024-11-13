@@ -1,5 +1,6 @@
 package com.cnweb.bookingapi.model;
 
+import com.cnweb.bookingapi.model.hotelattributemodels.Bed;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,6 +1,8 @@
 package com.cnweb.bookingapi.controller;
 
+import com.cnweb.bookingapi.dtos.request.FilterHotelDto;
 import com.cnweb.bookingapi.dtos.request.HotelDto;
+import com.cnweb.bookingapi.dtos.request.SearchHotelDto;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.service.HotelService;
 import jakarta.validation.Valid;
@@ -33,11 +35,12 @@ public class HotelController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Hotel>> getAvailableHotels(
+    public ResponseEntity<Page<Hotel>> searchHotels(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size,
-            @RequestParam Map<String, String> filters) {
-        return ResponseEntity.ok(hotelService.availableHotels(page, size, filters));
+            @ModelAttribute SearchHotelDto searchHotelDto,
+            @ModelAttribute FilterHotelDto filter) {
+        return ResponseEntity.ok(hotelService.searchHotels(page, size, searchHotelDto, filter));
     }
 
     public ResponseEntity<Hotel> createHotel(@Valid @RequestBody HotelDto hotelDto) {

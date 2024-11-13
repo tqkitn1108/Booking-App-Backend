@@ -1,6 +1,7 @@
 package com.cnweb.bookingapi.repository;
 
 import com.cnweb.bookingapi.model.Hotel;
+import com.cnweb.bookingapi.model.hotelattributemodels.PropertyType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -15,7 +16,7 @@ public interface HotelRepository extends MongoRepository<Hotel, String> {
 
     Page<Hotel> findByDest(String dest, Pageable pageable);
 
-    List<Hotel> findByType(String type);
+    List<Hotel> findByType(PropertyType type);
 
     Page<Hotel> findByStar(Integer star, Pageable pageable);
 

@@ -21,8 +21,6 @@ WORKDIR /app
 # Sao chép file JAR đã build từ bước trước vào container
 COPY --from=build /app/target/*.jar app.jar
 
-# Mở cổng 8080
 EXPOSE 8080
 
-# Chạy ứng dụng Spring Boot
 ENTRYPOINT ["java", "-jar", "app.jar"]
