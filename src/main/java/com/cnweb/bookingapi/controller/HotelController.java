@@ -1,11 +1,9 @@
 package com.cnweb.bookingapi.controller;
 
 import com.cnweb.bookingapi.dtos.request.FilterHotelDto;
-import com.cnweb.bookingapi.dtos.request.HotelDto;
 import com.cnweb.bookingapi.dtos.request.SearchHotelDto;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.service.HotelService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -29,11 +27,6 @@ public class HotelController {
         return new ResponseEntity<>(hotelService.allHotels(dest, page, size), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Hotel> getSingleHotel(@PathVariable String id) {
-        return new ResponseEntity<>(hotelService.singleHotel(id), HttpStatus.OK);
-    }
-
     @GetMapping("/search")
     public ResponseEntity<Page<Hotel>> searchHotels(
             @RequestParam(defaultValue = "0") int page,
@@ -41,22 +34,6 @@ public class HotelController {
             @ModelAttribute SearchHotelDto searchHotelDto,
             @ModelAttribute FilterHotelDto filter) {
         return ResponseEntity.ok(hotelService.searchHotels(page, size, searchHotelDto, filter));
-    }
-
-    public ResponseEntity<Hotel> createHotel(@Valid @RequestBody HotelDto hotelDto) {
-        Hotel createdHotel = hotelService.newHotel(hotelDto);
-//        URI location = ServletUriComponentsBuilder
-//                .fromCurrentRequest()
-//                .path("/{id}")
-//                .buildAndExpand(hotel.getId())
-//                .toUri();
-//        return ResponseEntity.created(location).build();
-        return new ResponseEntity<>(createdHotel, HttpStatus.CREATED);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel, @PathVariable String id) {
-        return new ResponseEntity<>(hotelService.updatedHotel(id, hotel), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")

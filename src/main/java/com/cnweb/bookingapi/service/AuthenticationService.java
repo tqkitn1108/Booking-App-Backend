@@ -31,7 +31,7 @@ public class AuthenticationService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new Exception("User with email " + input.getEmail() + " already exists");
         }
-        Optional<Role> optionalRole = roleRepository.findByName(ERole.USER);
+        Optional<Role> optionalRole = roleRepository.findByName(input.getRole() == null ? ERole.USER : input.getRole());
         if (optionalRole.isEmpty()) return null;
         User user = new User(input.getFullName(), email, passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());

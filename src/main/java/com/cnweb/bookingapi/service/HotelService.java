@@ -60,34 +60,11 @@ public class HotelService {
             return maxPeople >= adults + children / 4 || numOfRooms >= noRooms - 1;
         }).toList();
         hotelList = filterHotels(hotelList, filter);
-        return new PageImpl<>(hotelList,
-                PageRequest.of(page, size, Sort.by("rating").descending()), hotelList.size());
-    }
-
-    public Hotel newHotel(HotelDto hotelDto) {
-        Hotel hotel = hotelDto.toHotel();
-        hotel.setType(typeRepository.findByLabel(hotelDto.getType()).orElse(null));
-        hotel.setFacilities(hotelDto.getFacilities().stream().map(facility ->
-                facilityRepository.findByLabel(facility).orElse(null)).toList());
-        hotel.setRating(0F);
-        return hotelRepository.save(hotel);
-    }
-
-    public Hotel updatedHotel(String id, Hotel hotel) {
-        Hotel existingHotel = hotelRepository.findById(id).orElse(hotel);
-        Class<? extends Hotel> hotelClass = hotel.getClass();
-        for (Field field : hotelClass.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-                Object value = field.get(hotel);
-                if (value != null) {
-                    field.set(existingHotel, value);
-                }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return hotelRepository.save(existingHotel);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("rating").descending());
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), hotelList.size());
+        List<Hotel> hotels = hotelList.subList(start, end);
+        return new PageImpl<>(hotels,pageable, hotelList.size());
     }
 
     public void deletedHotel(String id) {
