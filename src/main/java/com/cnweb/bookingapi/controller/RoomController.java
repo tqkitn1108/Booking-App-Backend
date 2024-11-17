@@ -18,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoomController {
     private final RoomService roomService;
+
     @GetMapping("/{hotelId}/rooms")
     public ResponseEntity<List<Room>> getAllRooms(@PathVariable String hotelId) {
         return new ResponseEntity<>(roomService.allRooms(hotelId), HttpStatus.OK);
@@ -26,14 +27,6 @@ public class RoomController {
     @GetMapping("/rooms/{id}")
     public ResponseEntity<Room> getSingleRoom(@PathVariable String id) {
         return new ResponseEntity<>(roomService.singleRoom(id), HttpStatus.OK);
-    }
-
-    @GetMapping("/{hotelId}/availableRooms")
-    public ResponseEntity<List<Room>> getAvailableRooms(
-            @PathVariable String hotelId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkin,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate checkout) {
-        return ResponseEntity.ok(roomService.availableRooms(hotelId, checkin, checkout));
     }
 
     @PostMapping("/rooms")

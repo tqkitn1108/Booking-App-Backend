@@ -14,17 +14,21 @@ import java.util.List;
 @RequestMapping("/api/v1/business")
 public class BusinessController {
     private final BusinessService businessService;
+
     public BusinessController(BusinessService businessService) {
         this.businessService = businessService;
     }
+
     @GetMapping("/{businessId}/hotels")
     public ResponseEntity<List<Hotel>> getAllHotels(@PathVariable String businessId) {
         return ResponseEntity.ok(businessService.allHotels(businessId));
     }
+
     @GetMapping("/hotels/{id}")
     public ResponseEntity<Hotel> getSingleHotel(@PathVariable String id) {
         return new ResponseEntity<>(businessService.singleHotel(id), HttpStatus.OK);
     }
+
     @PostMapping("/hotels")
     public ResponseEntity<Hotel> createHotel(@Valid @RequestBody HotelDto hotelDto) {
         Hotel createdHotel = businessService.newHotel(hotelDto);
@@ -36,8 +40,15 @@ public class BusinessController {
 //        return ResponseEntity.created(location).build();
         return new ResponseEntity<>(createdHotel, HttpStatus.CREATED);
     }
+
     @PutMapping("/hotels/{id}")
     public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel, @PathVariable String id) {
         return new ResponseEntity<>(businessService.updatedHotel(id, hotel), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/hotels/{id}")
+    public ResponseEntity<String> deleteHotel(@PathVariable String id) {
+        businessService.deletedHotel(id);
+        return ResponseEntity.ok("Hotel has been deleted");
     }
 }

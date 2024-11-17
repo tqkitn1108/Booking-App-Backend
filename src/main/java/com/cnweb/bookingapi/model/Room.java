@@ -14,18 +14,18 @@ import java.util.List;
 @Document(collection = "rooms")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Room {
     @Id
     private String id;
     private String roomNumber;
     private List<LocalDate> unavailableDates;
-    @DocumentReference(lazy = true)
-    private List<Booking> bookings;
-    private String roomTypeId;
+    private List<String> bookingIds;
 
-    public Room() {
-        unavailableDates = new ArrayList<>();
-        bookings = new ArrayList<>();
+    public Room(String roomNumber) {
+        this.roomNumber = roomNumber;
+        this.unavailableDates = new ArrayList<>();
+        this.bookingIds = new ArrayList<>();
     }
 
     public Boolean isAvailableBetween(LocalDate checkIn, LocalDate checkOut) {
