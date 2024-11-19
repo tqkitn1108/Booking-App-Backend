@@ -52,6 +52,11 @@ public class RoomTypeService {
                 .matching(Criteria.where("id").is(hotelId))
                 .apply(new Update().push("roomTypes", roomType))
                 .first();
+        String roomTypeId = roomType.getId();
+        roomType.getRooms().forEach(room -> {
+            room.setRoomTypeId(roomTypeId);
+            roomRepository.save(room);
+        });
         return roomType;
     }
 

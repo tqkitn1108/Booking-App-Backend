@@ -2,26 +2,24 @@ package com.cnweb.bookingapi.controller;
 
 import com.cnweb.bookingapi.dtos.request.BookingDto;
 import com.cnweb.bookingapi.model.Booking;
-import com.cnweb.bookingapi.model.BookingStatus;
 import com.cnweb.bookingapi.service.BookingService;
+import com.cnweb.bookingapi.service.EmailService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/bookings")
+@RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
+    private final EmailService emailService;
 
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
-    }
-
-    @GetMapping("/{userId}")
-    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/users/{userId}")
+//    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<Booking>> getBookingsOfUser(@PathVariable String userId) {
         return ResponseEntity.ok(bookingService.allUserBookings(userId));
     }
@@ -45,8 +43,9 @@ public class BookingController {
     }
 
     @PutMapping("/{bookingId}")
-    public void confirmBooking(@RequestBody Booking booking) {
+    public void confirmBooking(@RequestBody Booking booking) throws Exception {
         bookingService.confirmBooking(booking);
+        emailService.sendConfirmBookingEmail(booking);
     }
 
     @DeleteMapping("/{bookingId}")
