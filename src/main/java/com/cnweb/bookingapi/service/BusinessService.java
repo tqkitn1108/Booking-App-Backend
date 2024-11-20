@@ -34,6 +34,7 @@ public class BusinessService {
         hotel.setFacilities(hotelDto.getFacilities().stream().map(facility ->
                 facilityRepository.findByName(facility).orElse(null)).toList());
         hotel.setRating(0F);
+        hotel.setMinPrice(0F);
         return hotelRepository.save(hotel);
     }
 

@@ -23,6 +23,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final HotelRepository hotelRepository;
     private final MongoTemplate mongoTemplate;
+
     public List<Review> allReviews(String hotelId) {
         return Objects.requireNonNull(hotelRepository.findById(hotelId).orElse(null)).getReviews();
     }
@@ -36,6 +37,7 @@ public class ReviewService {
     public Review newReview(ReviewDto input, String hotelId) {
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow();
         hotel.updateRating(input.getRating());
+        hotelRepository.save(hotel);
         Review review = new Review(input.getBookingId(), input.getFullName(), input.getRating(), input.getContent());
         review.setReviewDate(LocalDate.now());
         reviewRepository.insert(review);

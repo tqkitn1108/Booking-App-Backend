@@ -34,6 +34,7 @@ public class Hotel {
     @DocumentReference(lazy = true)
     private List<Facility> facilities;
     private String description;
+    private Float minPrice;
     private Float rating;
     @DocumentReference
     private List<RoomType> roomTypes;
