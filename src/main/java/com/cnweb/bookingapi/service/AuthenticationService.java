@@ -2,6 +2,7 @@ package com.cnweb.bookingapi.service;
 
 import com.cnweb.bookingapi.dtos.request.LoginUserDto;
 import com.cnweb.bookingapi.dtos.request.RegisterUserDto;
+import com.cnweb.bookingapi.model.AuthProvider;
 import com.cnweb.bookingapi.model.ERole;
 import com.cnweb.bookingapi.model.Role;
 import com.cnweb.bookingapi.model.User;
@@ -28,13 +29,14 @@ public class AuthenticationService {
 
     public User signup(RegisterUserDto input) throws Exception {
         String email = input.getEmail().toLowerCase();
-        if (userRepository.findByEmail(email).isPresent()) {
+        if (userRepository.existsByEmail(email)) {
             throw new Exception("User with email " + input.getEmail() + " already exists");
         }
         Optional<Role> optionalRole = roleRepository.findByName(input.getRole() == null ? ERole.USER : input.getRole());
         if (optionalRole.isEmpty()) return null;
         User user = new User(input.getFullName(), email, passwordEncoder.encode(input.getPassword()));
         user.setRole(optionalRole.get());
+        user.setProvider(AuthProvider.local);
         return userRepository.save(user);
     }
 
