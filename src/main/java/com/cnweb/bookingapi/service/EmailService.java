@@ -45,7 +45,7 @@ public class EmailService {
         String senderName = "TravelBK";
         String subject = "";
         String mailContent = "";
-        if (booking.getBookingStatus() == BookingStatus.ACCEPTED) {
+        if (booking.getBookingStatus() == BookingStatus.ACCEPTED || booking.getBookingStatus() == BookingStatus.PAID) {
             StringJoiner joiner = new StringJoiner(", ");
             booking.getRooms().forEach(room -> joiner.add(room.getRoomNumber()));
             subject = "Xác nhận đặt phòng";

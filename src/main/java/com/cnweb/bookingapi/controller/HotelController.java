@@ -2,6 +2,7 @@ package com.cnweb.bookingapi.controller;
 
 import com.cnweb.bookingapi.dtos.request.FilterHotelDto;
 import com.cnweb.bookingapi.dtos.request.SearchHotelDto;
+import com.cnweb.bookingapi.dtos.response.SearchSuggestion;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.service.HotelService;
 import lombok.RequiredArgsConstructor;
@@ -36,12 +37,17 @@ public class HotelController {
         return ResponseEntity.ok(hotelService.searchHotels(page, size, searchHotelDto, filter));
     }
 
-    @GetMapping("/countByDest")
+    @GetMapping("/search-by-name")
+    public ResponseEntity<List<SearchSuggestion>> searchHotelsByName(@RequestParam String name) {
+        return ResponseEntity.ok(hotelService.searchHotelsByName(name));
+    }
+
+    @GetMapping("/count-by-dest")
     public ResponseEntity<Map<String, Integer>> countByDest(@RequestParam List<String> destinations) {
         return new ResponseEntity<>(hotelService.countByDest(destinations), HttpStatus.OK);
     }
 
-    @GetMapping("/countByType")
+    @GetMapping("/count-by-type")
     public ResponseEntity<Map<String, Integer>> countByType(@RequestParam List<String> types) {
         return new ResponseEntity<>(hotelService.countByType(types), HttpStatus.OK);
     }

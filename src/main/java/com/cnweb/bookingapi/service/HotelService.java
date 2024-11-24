@@ -1,8 +1,8 @@
 package com.cnweb.bookingapi.service;
 
 import com.cnweb.bookingapi.dtos.request.FilterHotelDto;
-import com.cnweb.bookingapi.dtos.request.HotelDto;
 import com.cnweb.bookingapi.dtos.request.SearchHotelDto;
+import com.cnweb.bookingapi.dtos.response.SearchSuggestion;
 import com.cnweb.bookingapi.model.Hotel;
 import com.cnweb.bookingapi.model.RoomType;
 import com.cnweb.bookingapi.repository.FacilityRepository;
@@ -13,12 +13,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +40,13 @@ public class HotelService {
 
     public Page<Hotel> searchHotels(int page, int size, SearchHotelDto searchHotelDto, FilterHotelDto filter) {
         List<Hotel> hotelList;
+        Optional<Hotel> optionalHotel;
         if (searchHotelDto.getLocation() != null) {
             String dest = searchHotelDto.getLocation();
+            optionalHotel = hotelRepository.findByName(dest);// In case: The user search by hotel name
+            if (optionalHotel.isPresent()) {
+                dest = optionalHotel.get().getDest(); // Return the hotels which in the same location
+            }
             hotelList = hotelRepository.findByDest(dest);
             if (searchHotelDto.getCheckIn() != null && searchHotelDto.getCheckOut() != null) {
                 LocalDate checkIn = searchHotelDto.getCheckIn();
@@ -63,9 +64,17 @@ public class HotelService {
                     return maxPeople >= adults + children / 4 || numOfRooms >= noRooms - 1;
                 }).toList();
             }
-        } else hotelList = hotelRepository.findAll();
+        } else {
+            optionalHotel = Optional.empty();
+            hotelList = hotelRepository.findAll();
+        }
+        if (optionalHotel.isPresent()) {
+            hotelList.removeIf(hotel -> hotel.getId().equals(optionalHotel.get().getId()));
+            hotelList.add(0, optionalHotel.get());
+        }
         hotelList = filterHotels(hotelList, filter);
-        Pageable pageable = PageRequest.of(page, size, Sort.by("rating").descending());
+//        Pageable pageable = PageRequest.of(page, size, Sort.by("rating").descending());
+        Pageable pageable = PageRequest.of(page, size);
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), hotelList.size());
         List<Hotel> hotels = hotelList.subList(start, end);
@@ -111,5 +120,11 @@ public class HotelService {
                             .contains(facilityRepository.findByName(facility).orElse(null)))).toList();
         }
         return filteredHotel;
+    }
+
+    public List<SearchSuggestion> searchHotelsByName(String name) {
+        String regex = "(?i).*" + name + ".*"; // case-insensitive search
+        return hotelRepository.findByNameRegex(regex).stream()
+                .map(hotel -> new SearchSuggestion(hotel.getId(), hotel.getName())).toList();
     }
 }

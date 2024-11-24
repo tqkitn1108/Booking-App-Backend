@@ -11,9 +11,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,12 +25,13 @@ public class BookingService {
         return bookingRepository.findByEmail(userEmail);
     }
 
-    public List<Booking> allHotelBookings(String hotelId) {
-        return Objects.requireNonNull(mongoTemplate.findById(hotelId, Hotel.class)).getBookings();
-    }
-
     public List<Booking> pendingBookings(String hotelId) {
         return Objects.requireNonNull(bookingRepository.findByHotelIdAndBookingStatus(hotelId, BookingStatus.valueOf("PENDING")));
+    }
+
+    public List<Booking> getBookingsByStatus(String hotelId, String status) {
+        if (status == null) return Objects.requireNonNull(mongoTemplate.findById(hotelId, Hotel.class)).getBookings();
+        return bookingRepository.findByHotelIdAndBookingStatus(hotelId, BookingStatus.valueOf(status));
     }
 
     public Booking createReservation(String hotelId, BookingDto bookingDto) {
@@ -80,5 +79,21 @@ public class BookingService {
 
     public void deleteBooking(String bookingId) {
         bookingRepository.deleteById(bookingId);
+    }
+
+    public Booking updateBookingStatus(String bookingId, Map<String, String> updatedStatus) {
+        Optional<Booking> optionalBooking = bookingRepository.findById(bookingId);
+        if (optionalBooking.isEmpty()) {
+            return null;
+        }
+        Booking booking = optionalBooking.get();
+        booking.setBookingStatus(BookingStatus.valueOf(updatedStatus.get("status")));
+        return bookingRepository.save(booking);
+    }
+
+    public List<Booking> getRecentBookings(String hotelId) {
+        List<BookingStatus> excludedStatuses = Arrays.asList(BookingStatus.COMPLETED, BookingStatus.CANCELLED, BookingStatus.PENDING);
+        return bookingRepository
+                .findByHotelIdAndBookingStatusNotInOrderByIdDesc(hotelId, excludedStatuses);
     }
 }

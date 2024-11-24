@@ -1,6 +1,8 @@
 package com.cnweb.bookingapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +32,7 @@ public class User implements UserDetails, OAuth2User {
     private String password;
     private boolean isVerified;
     private String imageUrl;
-    //    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private AuthProvider provider;
     private String providerId;
 

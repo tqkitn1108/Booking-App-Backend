@@ -8,5 +8,9 @@ import java.util.List;
 
 public interface BookingRepository extends MongoRepository<Booking, String> {
     List<Booking> findByHotelIdAndBookingStatus(String hotelId, BookingStatus bookingStatus);
+
     List<Booking> findByEmail(String email);
+
+    List<Booking> findByHotelIdAndBookingStatusNotInOrderByIdDesc(String hotelId,
+                                                                  List<BookingStatus> bookingStatuses);
 }

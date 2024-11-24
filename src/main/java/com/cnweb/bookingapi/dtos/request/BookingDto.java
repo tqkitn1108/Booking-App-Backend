@@ -1,7 +1,6 @@
 package com.cnweb.bookingapi.dtos.request;
 
 import com.cnweb.bookingapi.model.Booking;
-import com.cnweb.bookingapi.model.PaymentDetails;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +27,6 @@ public class BookingDto {
     private Integer children;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-//    private PaymentDetails paymentDetails;
 
     public Booking toBooking() {
         return new Booking()
@@ -40,6 +38,5 @@ public class BookingDto {
                 .setChildren(children)
                 .setCheckInDate(checkInDate)
                 .setCheckOutDate(checkOutDate);
-//                .setPaymentDetails(paymentDetails);
     }
 }

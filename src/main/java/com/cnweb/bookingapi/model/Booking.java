@@ -29,7 +29,6 @@ public class Booking {
     private Integer children;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
-//    private PaymentDetails paymentDetails;
     @Field(targetType = FieldType.STRING)
     private BookingStatus bookingStatus;
     private Boolean isRated;
