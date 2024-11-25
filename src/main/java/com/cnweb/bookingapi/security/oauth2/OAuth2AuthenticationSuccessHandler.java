@@ -8,6 +8,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -27,6 +28,8 @@ import static com.cnweb.bookingapi.security.oauth2.HttpCookieOAuth2Authorization
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtService jwtService;
     private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    @Value("${frontend.base.url}")
+    private String frontendBaseUrl;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -65,7 +68,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private boolean isAuthorizedRedirectUri(String uri) {
         URI clientRedirectUri = URI.create(uri);
-        List<String> authorizedRedirectUris = Arrays.asList("http://localhost:3000/oauth2/redirect");
+        List<String> authorizedRedirectUris = List.of(frontendBaseUrl + "/oauth2/redirect");
 
         return authorizedRedirectUris.stream().anyMatch(authorizedRedirectUri -> {
             // Only validate host and port. Let the clients use different paths if they want to

@@ -51,7 +51,8 @@ public class BookingService {
     }
 
     public void confirmBooking(Booking booking) {
-        if (booking.getBookingStatus() == BookingStatus.ACCEPTED) {
+        if (booking.getBookingStatus() == BookingStatus.ACCEPTED
+                || booking.getBookingStatus() == BookingStatus.PAID) {
             List<LocalDate> stayDateList = new ArrayList<>();
             LocalDate date = booking.getCheckInDate();
             while (!date.isAfter(booking.getCheckOutDate())) {
@@ -88,7 +89,8 @@ public class BookingService {
         }
         Booking booking = optionalBooking.get();
         booking.setBookingStatus(BookingStatus.valueOf(updatedStatus.get("status")));
-        return bookingRepository.save(booking);
+        confirmBooking(booking);
+        return booking;
     }
 
     public List<Booking> getRecentBookings(String hotelId) {
