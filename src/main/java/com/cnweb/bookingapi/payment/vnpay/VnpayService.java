@@ -49,22 +49,17 @@ public class VnpayService extends HttpServlet {
 //        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 //        String vnp_CreateDate = formatter.format(cld.getTime());
 //        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
-//
-//        cld.add(Calendar.MINUTE, 15);
-//        String vnp_ExpireDate = formatter.format(cld.getTime());
-//        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
-        // Set múi giờ GMT+7
+        // Đặt múi giờ cố định GMT+7
         TimeZone timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
         Calendar cld = Calendar.getInstance(timeZone);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         formatter.setTimeZone(timeZone); // Đặt múi giờ cố định
 
-        // Tạo vnp_CreateDate và vnp_ExpireDate
         String vnp_CreateDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15); // Thêm 15 phút
+        cld.add(Calendar.MINUTE, 15);
         String vnp_ExpireDate = formatter.format(cld.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 

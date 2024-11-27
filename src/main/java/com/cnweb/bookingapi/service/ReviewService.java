@@ -45,7 +45,9 @@ public class ReviewService {
                 .matching(Criteria.where("id").is(hotelId))
                 .apply(new Update().push("reviews").value(review))
                 .first();
-        Objects.requireNonNull(mongoTemplate.findById(input.getBookingId(), Booking.class)).setIsRated(true);
+        Booking booking = Objects.requireNonNull(mongoTemplate.findById(input.getBookingId(), Booking.class));
+        booking.setIsRated(true);
+        mongoTemplate.save(booking);
         return review;
     }
 

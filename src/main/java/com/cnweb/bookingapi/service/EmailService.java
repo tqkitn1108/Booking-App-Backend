@@ -24,7 +24,7 @@ public class EmailService {
 
     public void sendVerificationEmail(String url, User user) throws MessagingException, UnsupportedEncodingException {
         String subject = "Email Verification";
-        String senderName = "TravelBK";
+        String senderName = "BookingHust";
         String mailContent = "<p> Hi, " + user.getFullName() + ", </p>" +
                 "<p> Thank you for registering with us, </p>" +
                 "<p> Please, follow the link below to complete your registration. </p>" +
@@ -42,7 +42,7 @@ public class EmailService {
     public void sendConfirmBookingEmail(Booking booking) throws MessagingException, UnsupportedEncodingException {
         Hotel hotel = mongoTemplate.findById(booking.getHotelId(), Hotel.class);
         assert hotel != null;
-        String senderName = "TravelBK";
+        String senderName = "BookingHust";
         String subject = "";
         String mailContent = "";
         if (booking.getBookingStatus() == BookingStatus.ACCEPTED || booking.getBookingStatus() == BookingStatus.PAID) {
