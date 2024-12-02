@@ -9,6 +9,7 @@ import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -41,11 +42,13 @@ public class BookingController {
     }
 
     @GetMapping("/hotels/{hotelId}/recently")
+//    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<List<Booking>> getRecentBookings(@PathVariable String hotelId) {
         return ResponseEntity.ok(bookingService.getRecentBookings(hotelId));
     }
 
     @GetMapping("/hotels/{hotelId}")
+    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<List<Booking>> getBookingsByStatus(@PathVariable String hotelId,
                                                              @RequestParam(required = false) String status) {
         return ResponseEntity.ok(bookingService.getBookingsByStatus(hotelId, status));

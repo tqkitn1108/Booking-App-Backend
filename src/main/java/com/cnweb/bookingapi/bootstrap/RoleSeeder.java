@@ -3,8 +3,10 @@ package com.cnweb.bookingapi.bootstrap;
 import com.cnweb.bookingapi.model.ERole;
 import com.cnweb.bookingapi.model.Role;
 import com.cnweb.bookingapi.repository.RoleRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -13,11 +15,9 @@ import java.util.Optional;
 // Before creating a user, we must ensure the role exists in the database.
 // Function executed at the application startup to create roles in the database if they don't exist.
 //@Component
+@RequiredArgsConstructor
 public class RoleSeeder implements ApplicationListener<ContextRefreshedEvent> {
     private final RoleRepository roleRepository;
-    public RoleSeeder(RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         this.loadRoles();

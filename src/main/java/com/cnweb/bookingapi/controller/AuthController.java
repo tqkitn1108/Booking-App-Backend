@@ -28,7 +28,7 @@ public class AuthController {
                                            final HttpServletRequest request) throws Exception {
         User registeredUser = authenticationService.signup(registerUserDto);
         publisher.publishEvent(new RegistrationCompleteEvent(registeredUser, applicationUrl(request)));
-        return ResponseEntity.ok("Success! Please check your email to complete your registration");
+        return ResponseEntity.ok("Thành công! Vui lòng kiểm tra email của bạn để hoàn thành đăng ký");
     }
 
     @GetMapping("/verifyEmail")

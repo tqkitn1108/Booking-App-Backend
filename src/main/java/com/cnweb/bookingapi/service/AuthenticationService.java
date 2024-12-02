@@ -29,15 +29,16 @@ public class AuthenticationService {
 
     public User signup(RegisterUserDto input) throws Exception {
         String email = input.getEmail().toLowerCase();
-        if (userRepository.existsByEmail(email)) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent() && user.get().isVerified()) {
             throw new Exception("User with email " + input.getEmail() + " already exists");
-        }
+        } else user.ifPresent(userRepository::delete);
         Optional<Role> optionalRole = roleRepository.findByName(input.getRole() == null ? ERole.USER : input.getRole());
         if (optionalRole.isEmpty()) return null;
-        User user = new User(input.getFullName(), email, passwordEncoder.encode(input.getPassword()));
-        user.setRole(optionalRole.get());
-        user.setProvider(AuthProvider.local);
-        return userRepository.save(user);
+        User newUser = new User(input.getFullName(), email, passwordEncoder.encode(input.getPassword()));
+        newUser.setRole(optionalRole.get());
+        newUser.setProvider(AuthProvider.local);
+        return userRepository.save(newUser);
     }
 
     public User authenticate(LoginUserDto input) {

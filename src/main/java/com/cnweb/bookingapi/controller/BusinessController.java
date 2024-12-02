@@ -6,6 +6,7 @@ import com.cnweb.bookingapi.service.BusinessService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class BusinessController {
     }
 
     @GetMapping("/{businessId}/hotels")
+    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<List<Hotel>> getAllHotels(@PathVariable String businessId) {
         return ResponseEntity.ok(businessService.allHotels(businessId));
     }
@@ -30,6 +32,7 @@ public class BusinessController {
     }
 
     @PostMapping("/hotels")
+    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<Hotel> createHotel(@Valid @RequestBody HotelDto hotelDto) {
         Hotel createdHotel = businessService.newHotel(hotelDto);
 //        URI location = ServletUriComponentsBuilder
@@ -42,11 +45,13 @@ public class BusinessController {
     }
 
     @PutMapping("/hotels/{id}")
+    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<Hotel> updateHotel(@RequestBody Hotel hotel, @PathVariable String id) {
         return new ResponseEntity<>(businessService.updatedHotel(id, hotel), HttpStatus.OK);
     }
 
     @DeleteMapping("/hotels/{id}")
+    @PreAuthorize("hasRole('HOTEL')")
     public ResponseEntity<String> deleteHotel(@PathVariable String id) {
         businessService.deletedHotel(id);
         return ResponseEntity.ok("Hotel has been deleted");
